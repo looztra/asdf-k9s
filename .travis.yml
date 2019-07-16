@@ -1,11 +1,13 @@
 language: c
+env:
+  - TOOL_NAME=k9s TOOL_VERSION=0.7.12
 before_script:
   - git clone https://github.com/asdf-vm/asdf.git
   - . asdf/asdf.sh
 script:
-  - asdf plugin-add k9s ./
-  - asdf list-all k9s
-  - asdf plugin-test k9s ./ --asdf-tool-version 0.7.0
+  - asdf plugin-add $TOOL_NAME ./
+  - asdf list-all $TOOL_NAME
+  - asdf plugin-test $TOOL_NAME ./ --asdf-tool-version $TOOL_VERSION
 os:
   - linux
   - osx
