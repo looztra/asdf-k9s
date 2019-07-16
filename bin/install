@@ -7,17 +7,12 @@ install_k9s() {
   local install_type=$1
   local version=$2
   local install_path=$3
+  local tmp_download_dir=$4
+
   local platform="$(uname)_x86_64"
   local bin_install_path="$install_path/bin"
   local binary_path="$bin_install_path/k9s"
   local download_url=$(get_download_url $version $platform)
-
-  if [ "$TMPDIR" = "" ]; then
-    local tmp_download_dir=$(mktemp -d -t k9s_XXXXXX)
-  else
-    local tmp_download_dir=$TMPDIR
-  fi
-
   local download_path="$tmp_download_dir/$(get_filename $version $platform)"
 
   echo "Downloading k9s from ${download_url} to ${download_path}"
@@ -53,4 +48,6 @@ get_download_url() {
   echo "https://github.com/derailed/k9s/releases/download/${version}/${filename}"
 }
 
-install_k9s $ASDF_INSTALL_TYPE $ASDF_INSTALL_VERSION $ASDF_INSTALL_PATH
+tmp_download_dir="$(mktemp -d -t 'asdf_k9s_XXXXXX')"
+trap 'rm -rf "${tmp_download_dir}"' EXIT
+install_k9s "$ASDF_INSTALL_TYPE" "$ASDF_INSTALL_VERSION" "$ASDF_INSTALL_PATH" "$tmp_download_dir"
