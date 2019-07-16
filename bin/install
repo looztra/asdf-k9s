@@ -68,6 +68,6 @@ get_download_url() {
   echo "https://github.com/derailed/k9s/releases/download/${version}/${filename}"
 }
 
-tmp_download_dir="$(mktemp -d -t 'asdf_k9s_XXXXXX')"
+tmp_download_dir="$(mktemp -d -t 'asdf_XXXXXXXX')"
 trap 'rm -rf "${tmp_download_dir}"' EXIT
 install_tool "$ASDF_INSTALL_TYPE" "$ASDF_INSTALL_VERSION" "$ASDF_INSTALL_PATH" "$tmp_download_dir" k9s
