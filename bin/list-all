@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
-releases_path=https://api.github.com/repos/instrumenta/kubeval/releases
+# https://github.com/derailed/k9s/releases/download/0.1.2/k9s_0.1.2_Linux_x86_64.tar.gz
+
+releases_path=https://api.github.com/repos/derailed/k9s/releases
 cmd="curl -s"
 if [ -n "$GITHUB_API_TOKEN" ]; then
   cmd="$cmd -H 'Authorization: token $GITHUB_API_TOKEN'"
