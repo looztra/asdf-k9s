@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
 # https://github.com/derailed/k9s/releases/download/0.1.2/k9s_0.1.2_Linux_x86_64.tar.gz
-
-releases_path=https://api.github.com/repos/derailed/k9s/releases
+github_coordinates=derailed/k9s
+releases_path="https://api.github.com/repos/${github_coordinates}/releases"
 cmd="curl -s"
 if [ -n "$GITHUB_API_TOKEN" ]; then
   cmd="$cmd -H 'Authorization: token $GITHUB_API_TOKEN'"
