@@ -1,0 +1,11 @@
+language: c
+before_script:
+  - git clone https://github.com/asdf-vm/asdf.git
+  - . asdf/asdf.sh
+script:
+  - asdf plugin-add kubeval ./
+  - asdf list-all kubeval
+  - asdf plugin-test kubeval ./ --asdf-tool-version 0.7.0
+os:
+  - linux
+  - osx
