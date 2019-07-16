@@ -1,8 +1,8 @@
 # asdf-kubeval
 
-[![Build Status](https://travis-ci.com/stefansedich/asdf-kubeval.svg?branch=master)](https://travis-ci.com/stefansedich/asdf-kubeval)
+[![Build Status](https://travis-ci.com/looztra/asdf-k9s.svg?branch=master)](https://travis-ci.com/looztra/asdf-k9s)
 
-[k9s][(https://github.com/instrumenta/kubeval](https://github.com/derailed/k9s/)) plugin for the [asdf](https://github.com/asdf-vm/asdf) version manager.
+[k9s][https://github.com/derailed/k9s](https://github.com/derailed/k9s/)) plugin for the [asdf](https://github.com/asdf-vm/asdf) version manager.
 
 ## Install
 
