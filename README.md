@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.com/looztra/asdf-k9s.svg?branch=master)](https://travis-ci.com/looztra/asdf-k9s)
 
-[k9s][https://github.com/derailed/k9s](https://github.com/derailed/k9s/)) plugin for the [asdf](https://github.com/asdf-vm/asdf) version manager.
+[k9s](https://github.com/derailed/k9s/)) plugin for the [asdf](https://github.com/asdf-vm/asdf) version manager.
 
 ## Install
 
