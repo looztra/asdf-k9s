@@ -30,7 +30,7 @@ install_k9s() {
   rm -f $binary_path 2>/dev/null || true
 
   echo "Extracting archive"
-  tar xpvf $download_path -C $tmp_download_dir
+  tar xpf $download_path -C $tmp_download_dir
 
   echo "Copying binary"
   cp "${tmp_download_dir}/k9s" ${binary_path}

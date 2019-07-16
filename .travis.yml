@@ -3,9 +3,9 @@ before_script:
   - git clone https://github.com/asdf-vm/asdf.git
   - . asdf/asdf.sh
 script:
-  - asdf plugin-add kubeval ./
-  - asdf list-all kubeval
-  - asdf plugin-test kubeval ./ --asdf-tool-version 0.7.0
+  - asdf plugin-add k9s ./
+  - asdf list-all k9s
+  - asdf plugin-test k9s ./ --asdf-tool-version 0.7.0
 os:
   - linux
   - osx
