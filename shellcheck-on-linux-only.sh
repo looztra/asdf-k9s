@@ -1,6 +1,8 @@
 #!/bin/bash
 
+set -x
 if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then
+  shellcheck -V
   shellcheck bin/*
 fi
 if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
