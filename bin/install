@@ -37,7 +37,7 @@ install_tool() {
   chmod +x "${binary_path}"
 }
 
-get_binary_path_in_archive(){
+get_binary_path_in_archive() {
   local archive_dir=$1
   local binary_name=$2
   local version=$3
