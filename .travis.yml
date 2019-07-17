@@ -1,6 +1,8 @@
 language: c
 env:
   - TOOL_NAME=k9s TOOL_VERSION=0.7.12
+before_install:
+  - ./prepare-travis.sh
 before_script:
   - git clone https://github.com/asdf-vm/asdf.git
   - . asdf/asdf.sh
