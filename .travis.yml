@@ -5,6 +5,7 @@ before_script:
   - git clone https://github.com/asdf-vm/asdf.git
   - . asdf/asdf.sh
 script:
+  - shellcheck bin/*
   - asdf plugin-add $TOOL_NAME ./
   - asdf list-all $TOOL_NAME
   - asdf plugin-test $TOOL_NAME ./ --asdf-tool-version $TOOL_VERSION
