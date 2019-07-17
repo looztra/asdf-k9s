@@ -1,13 +1,11 @@
 language: c
 env:
   - TOOL_NAME=k9s TOOL_VERSION=0.7.12
-before_install:
-  - ./prepare-travis.sh
 before_script:
   - git clone https://github.com/asdf-vm/asdf.git
   - . asdf/asdf.sh
 script:
-  - shellcheck bin/*
+  - ./shellcheck-on-linux-only.sh
   - asdf plugin-add $TOOL_NAME ./
   - asdf list-all $TOOL_NAME
   - asdf plugin-test $TOOL_NAME ./ --asdf-tool-version $TOOL_VERSION
