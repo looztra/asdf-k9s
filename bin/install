@@ -55,7 +55,7 @@ get_filename() {
   local platform="$2"
   local binary_name="$3"
 
-  echo "${binary_name}_${version}_${platform}.tar.gz"
+  echo "${binary_name}_${platform}.tar.gz"
 }
 
 get_download_url() {
