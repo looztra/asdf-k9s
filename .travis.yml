@@ -1,6 +1,8 @@
 language: c
 env:
   - TOOL_NAME=k9s TOOL_VERSION=0.7.12 TOOL_TEST_COMMAND='k9s version'
+  - TOOL_NAME=k9s TOOL_VERSION=0.13.0 TOOL_TEST_COMMAND='k9s version'
+  - TOOL_NAME=k9s TOOL_VERSION=0.14.0 TOOL_TEST_COMMAND='k9s version'
 before_script:
   - git clone https://github.com/asdf-vm/asdf.git
   - . asdf/asdf.sh
@@ -8,7 +10,9 @@ script:
   - ./shellcheck-on-linux-only.sh
   - asdf plugin-add $TOOL_NAME ./
   - asdf list-all $TOOL_NAME
-  - asdf plugin-test $TOOL_NAME ./ "$TOOL_TEST_COMMAND" --asdf-tool-version $TOOL_VERSION
+  - asdf install $TOOL_NAME $TOOL_VERSION
+  - asdf global $TOOL_NAME $TOOL_VERSION
+  - k9s version
 os:
   - linux
   - osx
