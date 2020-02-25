@@ -3,6 +3,33 @@
 set -e
 set -o pipefail
 
+# from https://stackoverflow.com/questions/4023830/how-to-compare-two-strings-in-dot-separated-version-format-in-bash
+function vercomp() {
+  if [[ "$1" == "$2" ]]; then
+    return 0
+  fi
+  local IFS=.
+  # shellcheck disable=SC2206
+  local i ver1=($1) ver2=($2)
+  # fill empty fields in ver1 with zeros
+  for ((i = ${#ver1[@]}; i < ${#ver2[@]}; i++)); do
+    ver1[i]=0
+  done
+  for ((i = 0; i < ${#ver1[@]}; i++)); do
+    if [[ -z ${ver2[i]} ]]; then
+      # fill empty fields in ver2 with zeros
+      ver2[i]=0
+    fi
+    if ((10#${ver1[i]} > 10#${ver2[i]})); then
+      return 1
+    fi
+    if ((10#${ver1[i]} < 10#${ver2[i]})); then
+      return 2
+    fi
+  done
+  return 0
+}
+
 install_tool() {
   #local install_type=$1
   local version=$2
@@ -18,7 +45,7 @@ install_tool() {
 
   platform=$(get_platform)
   download_url=$(get_download_url "$version" "$platform" "$binary_name")
-  download_path="$tmp_download_dir/"$(get_filename "$version" "$platform" "$binary_name")
+  download_path="$tmp_download_dir/"$(get_filename_pre_0_14_0 "$version" "$platform" "$binary_name")
 
   echo "Downloading [${binary_name}] from ${download_url} to ${download_path}"
   curl -Lo "$download_path" "$download_url"
@@ -50,7 +77,15 @@ get_platform() {
   echo "$(uname)_x86_64"
 }
 
-get_filename() {
+get_filename_post_0_14_0() {
+  local version="$1"
+  local platform="$2"
+  local binary_name="$3"
+
+  echo "${binary_name}_${platform}.tar.gz"
+}
+
+get_filename_pre_0_14_0() {
   local version="$1"
   local platform="$2"
   local binary_name="$3"
@@ -63,9 +98,35 @@ get_download_url() {
   local platform="$2"
   local binary_name="$3"
   local filename
-  filename="$(get_filename "$version" "$platform" "$binary_name")"
+  local path_version
 
-  echo "https://github.com/derailed/k9s/releases/download/${version}/${filename}"
+  # https://github.com/derailed/k9s/releases/download/v0.16.1/k9s_Linux_x86_64.tar.gz
+  # https://github.com/derailed/k9s/releases/download/0.11.1/k9s_0.11.1_Linux_x86_64.tar.gz
+  vercomp "$version" "0.14.0"
+  case $? in
+  0) op='=' ;;
+  1) op='>' ;;
+  2) op='<' ;;
+  esac
+  if [[ "$op" == '<' ]]; then
+    filename="$(get_filename_pre_0_14_0 "$version" "$platform" "$binary_name")"
+  else
+    filename="$(get_filename_post_0_14_0 "$version" "$platform" "$binary_name")"
+  fi
+
+  vercomp "$version" "0.13.0"
+  case $? in
+  0) op='=' ;;
+  1) op='>' ;;
+  2) op='<' ;;
+  esac
+  if [[ "$op" == '<' ]]; then
+    path_version="$version"
+  else
+    path_version="v$version"
+  fi
+
+  echo "https://github.com/derailed/k9s/releases/download/${path_version}/${filename}"
 }
 
 tmp_download_dir="$(mktemp -d -t 'asdf_XXXXXXXX')"
