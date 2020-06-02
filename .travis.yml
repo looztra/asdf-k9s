@@ -7,9 +7,11 @@ before_script:
   - git clone https://github.com/asdf-vm/asdf.git
   - . asdf/asdf.sh
 script:
+  - echo "Working on commit [TRAVIS_COMMIT=$TRAVIS_COMMIT] [TRAVIS_PULL_REQUEST_BRANCH=$TRAVIS_PULL_REQUEST_BRANCH]"
   - ./shellcheck-on-linux-only.sh
   - asdf plugin-add $TOOL_NAME ./
   - asdf list-all $TOOL_NAME
+  - asdf plugin test $TOOL_NAME ./ --asdf-plugin-gitref "$TRAVIS_COMMIT" --asdf-tool-version $TOOL_VERSION "$TOOL_TEST_COMMAND"
   - asdf install $TOOL_NAME $TOOL_VERSION
   - asdf global $TOOL_NAME $TOOL_VERSION
   - k9s version
