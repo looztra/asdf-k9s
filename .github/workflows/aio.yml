@@ -24,7 +24,7 @@ jobs:
         with:
           command: k9s version
 
-  lint:
+  lint_and_tests:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -37,3 +37,13 @@ jobs:
           SHFMT_OPTS: -i 2 # Optional: pass arguments to shfmt.
         with:
           sh_checker_comment: true
+      - name: Install asdf
+        run: git clone https://github.com/asdf-vm/asdf.git $HOME/asdf
+
+      - name: Test plugin
+        run: |
+          sudo apt-get install bats
+          bats --version
+          . $HOME/asdf/asdf.sh
+          asdf plugin-add k9s $GITHUB_WORKSPACE
+          bats test
