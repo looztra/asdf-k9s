@@ -3,6 +3,54 @@
 set -e
 set -o pipefail
 
+# https://github.com/derailed/k9s/releases/download/v0.16.1/k9s_Linux_x86_64.tar.gz
+# https://github.com/derailed/k9s/releases/download/v0.16.1/k9s_Darwin_x86_64.tar.gz
+
+readonly NO_BINARY_ALTNAME=@@UNDEFINED@@
+# shellcheck disable=SC2034
+readonly g_github_coordinates=derailed/k9s
+readonly g_binary_name=k9s
+readonly g_binary_altname=btm
+#
+# available : __VERSION__/__VERSION_SHORT__/__BINARY_NAME__/__PLATFORM__
+#
+readonly g_filename_template=__BINARY_NAME_____PLATFORM__.tar.gz
+#
+# available : __GITHUB_COORDINATES__/__VERSION__/__VERSION_SHORT__/__FILENAME__
+#
+# shellcheck disable=SC2034
+readonly g_download_url_template=https://github.com/__GITHUB_COORDINATES__/releases/download/v__VERSION__/__FILENAME__
+#
+# available : __ARCHIVE_DIR__/__BINARY_NAME__/__VERSION__/__VERSION_SHORT__/__PLATFORM__
+#
+readonly g_binary_path_in_archive_template=__ARCHIVE_DIR__/__BINARY_NAME__
+readonly g_downloaded_file_is_not_an_archive=false
+readonly g_platform_pattern=uname_c_x86_64 # one of uname_c_x86_64|uname_l_dash_amd64|uname_l_underscore_amd64|custom
+
+# Borrowed to someone, but I don't remember who it was, sorry :(
+# Print message $2 with log-level $1 to STDERR, colorized if terminal
+# log DEBUG "DOCKER_HOST ${DOCKER_HOST}"
+function log() {
+  local level=${1?}
+  shift
+  local code
+  local line
+  code=''
+  line="[$(date '+%F %T')] $level: $*"
+  if [ -t 2 ]; then
+    case "$level" in
+    INFO) code=36 ;;
+    DEBUG) code=35 ;;
+    WARN) code=33 ;;
+    ERROR) code=31 ;;
+    *) code=37 ;;
+    esac
+    echo -e "\e[${code}m${line} \e[94m(${FUNCNAME[1]})\e[0m"
+  else
+    echo "$line"
+  fi >&2
+}
+
 # from https://stackoverflow.com/questions/4023830/how-to-compare-two-strings-in-dot-separated-version-format-in-bash
 function vercomp() {
   if [[ "$1" == "$2" ]]; then
@@ -31,37 +79,65 @@ function vercomp() {
 }
 
 install_tool() {
-  #local install_type=$1
+  local install_type=$1
   local version=$2
   local install_path=$3
   local tmp_download_dir=$4
   local binary_name=$5
+  local binary_alt_name=$6
+  local downloaded_file_is_not_an_archive=$7
 
   local platform
   local bin_install_path="$install_path/bin"
-  local binary_path="$bin_install_path/${binary_name}"
+  local full_path_to_binary="$bin_install_path/${binary_name}"
+  local full_path_to_alt_binary
+  if [[ -n "$binary_alt_name" || "$binary_alt_name" == "$NO_BINARY_ALTNAME" ]]; then
+    full_path_to_alt_binary="$bin_install_path/${binary_alt_name}"
+  fi
   local download_url
-  local download_path
+  local download_target_file
+  local download_sub_path_dir
+
+  if [[ "$install_type" != "version" ]]; then
+    log ERROR "Install of type [$install_type] not supported"
+  fi
 
   platform=$(get_platform)
   download_url=$(get_download_url "$version" "$platform" "$binary_name")
-  download_path="$tmp_download_dir/"$(get_filename_pre_0_14_0 "$version" "$platform" "$binary_name")
+  download_sub_path_dir=$tmp_download_dir/sub
+  mkdir -p "$download_sub_path_dir"
+  download_target_file="$download_sub_path_dir/"$(get_filename "$version" "$platform" "$binary_name")
 
-  echo "Downloading [${binary_name}] from ${download_url} to ${download_path}"
-  curl -Lo "$download_path" "$download_url"
+  log INFO "Downloading [${binary_name}] from ${download_url} to ${download_target_file}"
+  curl --location --output "$download_target_file" "$download_url"
 
-  echo "Creating bin directory"
+  log INFO "Creating bin directory [${bin_install_path}]"
   mkdir -p "${bin_install_path}"
 
-  echo "Cleaning previous binaries"
-  rm -f "$binary_path" 2>/dev/null || true
+  log INFO "Cleaning previous binaries if any"
+  rm -f "$full_path_to_binary" 2>/dev/null || true
+  if [[ -n "$binary_alt_name" ]]; then
+    rm -f "$full_path_to_alt_binary" 2>/dev/null || true
+  fi
+  if [[ "$downloaded_file_is_not_an_archive" != "true" ]]; then
+    log INFO "Extracting archive"
+    tar xpf "$download_target_file" -C "$tmp_download_dir"
+  else
+    log INFO "Preparing downloaded file"
+    cp "$download_target_file" "$tmp_download_dir"
+  fi
+  log INFO "Copying binaries"
+  cp "$(get_binary_path_in_archive "${tmp_download_dir}" "${binary_name}" "${version}" "${platform}")" "${full_path_to_binary}"
+  chmod +x "${full_path_to_binary}"
+  if [[ -n "$binary_alt_name" ]]; then
+    cp "${full_path_to_binary}" "${full_path_to_alt_binary}"
+    chmod +x "${full_path_to_alt_binary}"
+  fi
+}
 
-  echo "Extracting archive"
-  tar xpf "$download_path" -C "$tmp_download_dir"
-
-  echo "Copying binary"
-  cp "$(get_binary_path_in_archive "${tmp_download_dir}" "${binary_name}" "${version}" "${platform}")" "${binary_path}"
-  chmod +x "${binary_path}"
+get_version_short() {
+  local version=$1
+  echo "$version" | tr -d "v"
 }
 
 get_binary_path_in_archive() {
@@ -69,12 +145,51 @@ get_binary_path_in_archive() {
   local binary_name=$2
   local version=$3
   local platform=$4
+  local version_short
+  version_short=$(get_version_short "$version")
 
-  echo "$archive_dir/$binary_name"
+  echo $g_binary_path_in_archive_template |
+    sed "s|__ARCHIVE_DIR__|${archive_dir}|g;s|__BINARY_NAME__|${binary_name}|g;s|__VERSION__|${version}|g;s|__VERSION_SHORT__|${version_short}|g;s|__PLATFORM__|${platform}|g;"
 }
 
 get_platform() {
+  get_platform_${g_platform_pattern}
+}
+
+get_platform_custom() {
+  echo "NOT USED"
+}
+
+get_platform_uname_c_x86_64() {
   echo "$(uname)_x86_64"
+}
+
+get_platform_uname_l_dash_amd64() {
+  echo "$(uname | tr '[:upper:]' '[:lower:]')-amd64"
+}
+
+get_platform_uname_l_underscore_amd64() {
+  echo "$(uname | tr '[:upper:]' '[:lower:]')_amd64"
+}
+
+get_filename() {
+  local version="$1"
+  local platform="$2"
+  local binary_name="$3"
+  local version_short
+  version_short=$(get_version_short "$version")
+  #  log DEBUG "version=${version}, version_short=${version_short}, binary_name=${binary_name}, platform=${platform}"
+
+  echo "$g_filename_template" |
+    sed "s/__VERSION__/${version}/g;s/__VERSION_SHORT__/${version_short}/g;s/__BINARY_NAME__/${binary_name}/g;s/__PLATFORM__/${platform}/g"
+}
+
+get_download_url() {
+  local version="$1"
+  local platform="$2"
+  local binary_name="$3"
+
+  k9s_get_download_url "$version" "$platform" "$binary_name"
 }
 
 get_filename_post_0_14_0() {
@@ -93,7 +208,7 @@ get_filename_pre_0_14_0() {
   echo "${binary_name}_${version}_${platform}.tar.gz"
 }
 
-get_download_url() {
+k9s_get_download_url() {
   local version="$1"
   local platform="$2"
   local binary_name="$3"
@@ -128,7 +243,7 @@ get_download_url() {
 
   echo "https://github.com/derailed/k9s/releases/download/${path_version}/${filename}"
 }
-
-tmp_download_dir="$(mktemp -d -t 'asdf_XXXXXXXX')"
-trap 'rm -rf "${tmp_download_dir}"' EXIT
-install_tool "$ASDF_INSTALL_TYPE" "$ASDF_INSTALL_VERSION" "$ASDF_INSTALL_PATH" "$tmp_download_dir" k9s
+#
+readonly _tmp_download_dir="$(mktemp -d -t 'asdf_XXXXXXXX')"
+trap 'rm -rf "${_tmp_download_dir}"' EXIT
+install_tool "$ASDF_INSTALL_TYPE" "$ASDF_INSTALL_VERSION" "$ASDF_INSTALL_PATH" "$_tmp_download_dir" "$g_binary_name" "$g_binary_altname" "$g_downloaded_file_is_not_an_archive"

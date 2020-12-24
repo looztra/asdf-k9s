@@ -1,8 +1,15 @@
 # asdf-k9s
 
-[![Build Status](https://travis-ci.org/looztra/asdf-k9s.svg?branch=master)](https://travis-ci.org/looztra/asdf-k9s)
+![AllInOne](https://github.com/looztra/asdf-k9s/workflows/AllInOne/badge.svg)
+[![GitHub license](https://img.shields.io/github/license/looztra/asdf-k9s?style=plastic)](https://github.com/looztra/asdf-k9s/blob/master/LICENSE)
 
-[k9s](https://github.com/derailed/k9s/) plugin for the [asdf](https://github.com/asdf-vm/asdf) version manager.
+## Build History
+
+[![Build history](https://buildstats.info/github/chart/looztra/asdf-k9s?branch=master)](https://github.com/looztra/asdf-k9s/actions)
+
+## k9s
+
+<https://github.com/derailed/k9s>
 
 ## Install
 
@@ -13,3 +20,14 @@ asdf plugin-add k9s https://github.com/looztra/asdf-k9s
 ## Use
 
 Check out the [asdf](https://github.com/asdf-vm/asdf) readme for instructions on how to install and manage versions of k9s.
+
+## Source code
+
+This source code has been generated with :
+
+```bash
+cookiecutter --overwrite-if-exists --directory plugins/k9s --no-input https://github.com/looztra/cookiecutter-asdf-plugin
+
+```
+
+
