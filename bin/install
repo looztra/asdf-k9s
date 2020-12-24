@@ -189,7 +189,7 @@ get_download_url() {
   local binary_name="$3"
   local filename
 
-  if [ -n "$g_download_url_mode" ]; then
+  if [ -z "$g_download_url_mode" ]; then
     filename="$(get_filename "$version" "$platform" "$binary_name")"
     local version_short
     version_short=$(get_version_short "$version")
