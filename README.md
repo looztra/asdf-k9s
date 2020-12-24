@@ -23,6 +23,11 @@ Check out the [asdf](https://github.com/asdf-vm/asdf) readme for instructions on
 
 ## Source code
 
-This source code has been generated with : `cookiecutter --overwrite-if-exists --directory plugins/k9s --no-input https://github.com/looztra/cookiecutter-asdf-plugin`
+This source code has been generated with :
+
+```bash
+cookiecutter --overwrite-if-exists --directory plugins/k9s --no-input https://github.com/looztra/cookiecutter-asdf-plugin
+
+```
 
 

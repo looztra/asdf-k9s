@@ -38,12 +38,16 @@ jobs:
         with:
           sh_checker_comment: true
       - name: Install asdf
-        run: git clone https://github.com/asdf-vm/asdf.git $HOME/asdf
+        run: |
+          git clone https://github.com/asdf-vm/asdf.git $HOME/asdf
 
-      - name: Test plugin
+      - name: Install bats
         run: |
           sudo apt-get install bats
           bats --version
+
+      - name: Test plugin with bats
+        run: |
           . $HOME/asdf/asdf.sh
           asdf plugin-add k9s $GITHUB_WORKSPACE
           bats test
