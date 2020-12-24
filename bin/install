@@ -17,7 +17,7 @@ readonly g_filename_template=__BINARY_NAME_____PLATFORM__.tar.gz
 #
 # __GITHUB_COORDINATES__/__VERSION__/__VERSION_SHORT__/__FILENAME__
 #
-readonly g_download_url_template=https://github.com/__GITHUB_COORDINATES__/releases/download/__VERSION__/__FILENAME__
+readonly g_download_url_template=https://github.com/__GITHUB_COORDINATES__/releases/download/v__VERSION__/__FILENAME__
 #
 # __ARCHIVE_DIR__/__BINARY_NAME__/__VERSION__/__VERSION_SHORT__/__PLATFORM__
 #
