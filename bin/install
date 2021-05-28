@@ -208,6 +208,14 @@ get_filename_pre_0_14_0() {
   echo "${binary_name}_${version}_${platform}.tar.gz"
 }
 
+get_filename_0_24_10() {
+  local version="$1"
+  local platform="$2"
+  local binary_name="$3"
+
+  echo "${binary_name}_v${version}_${platform}.tar.gz"
+}
+
 k9s_get_download_url() {
   local version="$1"
   local platform="$2"
@@ -239,6 +247,19 @@ k9s_get_download_url() {
     path_version="$version"
   else
     path_version="v$version"
+  fi
+
+  vercomp "$version" "0.24.10"
+  case $? in
+  0) op='=' ;;
+  1) op='>' ;;
+  2) op='<' ;;
+  esac
+  if [[ "$op" == '=' ]]; then
+    filename="$(get_filename_0_24_10 "$version" "$platform" "$binary_name")"
+    path_version="v$version"
+  else
+    : # do not alter behavior
   fi
 
   echo "https://github.com/derailed/k9s/releases/download/${path_version}/${filename}"
