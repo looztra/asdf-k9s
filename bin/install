@@ -5,6 +5,7 @@ set -o pipefail
 
 # https://github.com/derailed/k9s/releases/download/v0.16.1/k9s_Linux_x86_64.tar.gz
 # https://github.com/derailed/k9s/releases/download/v0.16.1/k9s_Darwin_x86_64.tar.gz
+# https://github.com/derailed/k9s/releases/download/v0.16.1/k9s_Darwin_arm64.tar.gz
 
 readonly NO_BINARY_ALTNAME=@@UNDEFINED@@
 # shellcheck disable=SC2034
@@ -25,7 +26,8 @@ readonly g_download_url_template=https://github.com/__GITHUB_COORDINATES__/relea
 #
 readonly g_binary_path_in_archive_template=__ARCHIVE_DIR__/__BINARY_NAME__
 readonly g_downloaded_file_is_not_an_archive=false
-readonly g_platform_pattern=uname_c_x86_64 # one of uname_c_x86_64|uname_l_dash_amd64|uname_l_underscore_amd64|custom
+
+readonly g_platform_pattern=custom # one of uname_c_x86_64|uname_l_dash_amd64|uname_l_underscore_amd64|uname_l_underscore_amd64|custom
 
 # Borrowed to someone, but I don't remember who it was, sorry :(
 # Print message $2 with log-level $1 to STDERR, colorized if terminal
@@ -156,8 +158,23 @@ get_platform() {
   get_platform_${g_platform_pattern}
 }
 
+get_cpu() {
+  local machine_hardware_name
+  machine_hardware_name="$(uname -m)"
+
+  case "$machine_hardware_name" in
+  'x86_64') local cpu_type="x86_64" ;;
+  'powerpc64le' | 'ppc64le') local cpu_type="ppc64le" ;;
+  'aarch64') local cpu_type="arm64" ;;
+  'armv5l' | 'armv6l' | 'armv7l') local cpu_type="arm" ;;
+  *) local cpu_type="$machine_hardware_name" ;;
+  esac
+
+  echo "$cpu_type"
+}
+
 get_platform_custom() {
-  echo "NOT USED"
+  echo "$(uname)_$(get_cpu)"
 }
 
 get_platform_uname_c_x86_64() {
