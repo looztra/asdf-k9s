@@ -11,6 +11,8 @@ readonly NO_BINARY_ALTNAME=@@UNDEFINED@@
 # shellcheck disable=SC2034
 readonly g_github_coordinates=derailed/k9s
 readonly g_binary_name=k9s
+readonly g_binary_altname="${NO_BINARY_ALTNAME}"
+
 #
 # available : __VERSION__/__VERSION_SHORT__/__BINARY_NAME__/__PLATFORM__
 #
