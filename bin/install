@@ -103,7 +103,7 @@ install_tool() {
     log ERROR "Install of type [$install_type] not supported"
   fi
 
-  platform=$(get_platform)
+  platform=$(get_platform "$version")
   download_url=$(get_download_url "$version" "$platform" "$binary_name")
   download_sub_path_dir=$tmp_download_dir/sub
   mkdir -p "$download_sub_path_dir"
@@ -154,7 +154,20 @@ get_binary_path_in_archive() {
 }
 
 get_platform() {
-  get_platform_${g_platform_pattern}
+  local version="$1"
+  local platform_
+  vercomp "$version" "0.27.0"
+  case $? in
+  0) op='=' ;;
+  1) op='>' ;;
+  2) op='<' ;;
+  esac
+  if [[ "$op" == '<' ]]; then
+    platform_="$(get_platform_custom)"
+  else
+    platform_="get_platform_${g_platform_pattern}"
+  fi
+  echo "${platform_}"
 }
 
 get_cpu() {
