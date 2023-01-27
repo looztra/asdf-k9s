@@ -296,6 +296,6 @@ k9s_get_download_url() {
   echo "https://github.com/derailed/k9s/releases/download/${path_version}/${filename}"
 }
 #
-readonly _tmp_download_dir="$(mktemp -d -t 'asdf_XXXXXXXX')"
+_tmp_download_dir="$(mktemp -d -t 'asdf_XXXXXXXX')"
 trap 'rm -rf "${_tmp_download_dir}"' EXIT
 install_tool "$ASDF_INSTALL_TYPE" "$ASDF_INSTALL_VERSION" "$ASDF_INSTALL_PATH" "$_tmp_download_dir" "$g_binary_name" "$g_binary_altname" "$g_downloaded_file_is_not_an_archive"

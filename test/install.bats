@@ -20,3 +20,17 @@
   [ "$status" -eq 0 ]
   asdf list k9s | grep 0.24.2
 }
+
+@test "can install 0.26.0" {
+  run asdf uninstall k9s 0.26.0
+  run asdf install k9s 0.26.0
+  [ "$status" -eq 0 ]
+  asdf list k9s | grep 0.26.0
+}
+
+@test "can install 0.27.0" {
+  run asdf uninstall k9s 0.27.0
+  run asdf install k9s 0.27.0
+  [ "$status" -eq 0 ]
+  asdf list k9s | grep 0.27.0
+}
