@@ -2,13 +2,19 @@ name: AllInOne
 
 on:
   push:
+    branches:
+      - master
+      - main
     paths-ignore:
       - '**.md'
   pull_request:
     paths-ignore:
       - '**.md'
-  schedule:
-    - cron: 0 0 * * 5
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   plugin_test:
@@ -30,7 +36,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
       - name: Run the sh-checker
-        uses: luizm/action-sh-checker@v0.1.12
+        uses: luizm/action-sh-checker@v0.5.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           #SHELLCHECK_OPTS: -e SC1004 # Optional: exclude some shellcheck warnings.

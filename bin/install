@@ -11,6 +11,8 @@ readonly NO_BINARY_ALTNAME=@@UNDEFINED@@
 # shellcheck disable=SC2034
 readonly g_github_coordinates=derailed/k9s
 readonly g_binary_name=k9s
+readonly g_binary_altname="${NO_BINARY_ALTNAME}"
+
 #
 # available : __VERSION__/__VERSION_SHORT__/__BINARY_NAME__/__PLATFORM__
 #
@@ -26,7 +28,7 @@ readonly g_download_url_template=https://github.com/__GITHUB_COORDINATES__/relea
 readonly g_binary_path_in_archive_template=__ARCHIVE_DIR__/__BINARY_NAME__
 readonly g_downloaded_file_is_not_an_archive=false
 
-readonly g_platform_pattern=custom # one of uname_c_x86_64|uname_l_dash_amd64|uname_l_underscore_amd64|uname_l_underscore_amd64|custom
+readonly g_platform_pattern=uname_l_underscore_amd64 # one of uname_c_x86_64|uname_l_dash_amd64|uname_l_underscore_amd64|uname_l_underscore_amd64|custom
 
 # Borrowed to someone, but I don't remember who it was, sorry :(
 # Print message $2 with log-level $1 to STDERR, colorized if terminal
@@ -103,7 +105,7 @@ install_tool() {
     log ERROR "Install of type [$install_type] not supported"
   fi
 
-  platform=$(get_platform)
+  platform=$(get_platform "$version")
   download_url=$(get_download_url "$version" "$platform" "$binary_name")
   download_sub_path_dir=$tmp_download_dir/sub
   mkdir -p "$download_sub_path_dir"
@@ -154,7 +156,20 @@ get_binary_path_in_archive() {
 }
 
 get_platform() {
-  get_platform_${g_platform_pattern}
+  local version="$1"
+  local platform_
+  vercomp "$version" "0.27.0"
+  case $? in
+  0) op='=' ;;
+  1) op='>' ;;
+  2) op='<' ;;
+  esac
+  if [[ "$op" == '<' ]]; then
+    platform_="$(get_platform_custom)"
+  else
+    platform_="$(get_platform_${g_platform_pattern})"
+  fi
+  echo "${platform_}"
 }
 
 get_cpu() {
@@ -281,6 +296,6 @@ k9s_get_download_url() {
   echo "https://github.com/derailed/k9s/releases/download/${path_version}/${filename}"
 }
 #
-readonly _tmp_download_dir="$(mktemp -d -t 'asdf_XXXXXXXX')"
+_tmp_download_dir="$(mktemp -d -t 'asdf_XXXXXXXX')"
 trap 'rm -rf "${_tmp_download_dir}"' EXIT
 install_tool "$ASDF_INSTALL_TYPE" "$ASDF_INSTALL_VERSION" "$ASDF_INSTALL_PATH" "$_tmp_download_dir" "$g_binary_name" "$g_binary_altname" "$g_downloaded_file_is_not_an_archive"
