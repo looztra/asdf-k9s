@@ -26,7 +26,7 @@ readonly g_download_url_template=https://github.com/__GITHUB_COORDINATES__/relea
 readonly g_binary_path_in_archive_template=__ARCHIVE_DIR__/__BINARY_NAME__
 readonly g_downloaded_file_is_not_an_archive=false
 
-readonly g_platform_pattern=custom # one of uname_c_x86_64|uname_l_dash_amd64|uname_l_underscore_amd64|uname_l_underscore_amd64|custom
+readonly g_platform_pattern=uname_l_underscore_amd64 # one of uname_c_x86_64|uname_l_dash_amd64|uname_l_underscore_amd64|uname_l_underscore_amd64|custom
 
 # Borrowed to someone, but I don't remember who it was, sorry :(
 # Print message $2 with log-level $1 to STDERR, colorized if terminal
