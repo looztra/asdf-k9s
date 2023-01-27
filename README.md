@@ -20,14 +20,3 @@ asdf plugin-add k9s https://github.com/looztra/asdf-k9s
 ## Use
 
 Check out the [asdf](https://github.com/asdf-vm/asdf) readme for instructions on how to install and manage versions of k9s.
-
-## Source code
-
-This source code has been generated with :
-
-```bash
-cookiecutter --overwrite-if-exists --directory plugins/k9s --no-input https://github.com/looztra/cookiecutter-asdf-plugin
-
-```
-
-

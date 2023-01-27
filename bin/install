@@ -165,7 +165,7 @@ get_platform() {
   if [[ "$op" == '<' ]]; then
     platform_="$(get_platform_custom)"
   else
-    platform_="get_platform_${g_platform_pattern}"
+    platform_="$(get_platform_${g_platform_pattern})"
   fi
   echo "${platform_}"
 }
