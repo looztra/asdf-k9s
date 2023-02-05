@@ -28,7 +28,7 @@ readonly g_download_url_template=https://github.com/__GITHUB_COORDINATES__/relea
 readonly g_binary_path_in_archive_template=__ARCHIVE_DIR__/__BINARY_NAME__
 readonly g_downloaded_file_is_not_an_archive=false
 
-readonly g_platform_pattern=uname_l_underscore_amd64 # one of uname_c_x86_64|uname_l_dash_amd64|uname_l_underscore_amd64|uname_l_underscore_amd64|custom
+readonly g_platform_pattern=custom # one of uname_c_x86_64|uname_l_dash_amd64|uname_l_underscore_amd64|uname_l_underscore_amd64|custom
 
 # Borrowed to someone, but I don't remember who it was, sorry :(
 # Print message $2 with log-level $1 to STDERR, colorized if terminal
@@ -105,7 +105,7 @@ install_tool() {
     log ERROR "Install of type [$install_type] not supported"
   fi
 
-  platform=$(get_platform "$version")
+  platform=$(get_platform)
   download_url=$(get_download_url "$version" "$platform" "$binary_name")
   download_sub_path_dir=$tmp_download_dir/sub
   mkdir -p "$download_sub_path_dir"
@@ -156,20 +156,7 @@ get_binary_path_in_archive() {
 }
 
 get_platform() {
-  local version="$1"
-  local platform_
-  vercomp "$version" "0.27.0"
-  case $? in
-  0) op='=' ;;
-  1) op='>' ;;
-  2) op='<' ;;
-  esac
-  if [[ "$op" == '<' ]]; then
-    platform_="$(get_platform_custom)"
-  else
-    platform_="$(get_platform_${g_platform_pattern})"
-  fi
-  echo "${platform_}"
+  get_platform_${g_platform_pattern}
 }
 
 get_cpu() {
@@ -177,7 +164,10 @@ get_cpu() {
   machine_hardware_name="$(uname -m)"
 
   case "$machine_hardware_name" in
-  'x86_64') local cpu_type="x86_64" ;;
+  'x86_64')
+    vercomp "$version" "0.26.7"
+    if [[ $? == 1 ]]; then local cpu_type="amd64"; else local cpu_type="x86_64"; fi
+    ;;
   'powerpc64le' | 'ppc64le') local cpu_type="ppc64le" ;;
   'aarch64') local cpu_type="arm64" ;;
   'armv5l' | 'armv6l' | 'armv7l') local cpu_type="arm" ;;
