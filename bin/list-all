@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 readonly github_coordinates=derailed/k9s
-readonly releases_path="https://api.github.com/repos/${github_coordinates}/releases"
+readonly releases_path="https://api.github.com/repos/${github_coordinates}/releases?per_page=100"
 cmd="curl -Ls"
 if [ -n "$GITHUB_API_TOKEN" ]; then
   cmd="$cmd -H 'Authorization: token $GITHUB_API_TOKEN'"
