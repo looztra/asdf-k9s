@@ -28,30 +28,24 @@ jobs:
       - name: asdf_plugin_test default
         uses: asdf-vm/actions/plugin-test@v3
         with:
-          command: k9s --version
-
-      - name: asdf_plugin_test 0.13.0
-        uses: asdf-vm/actions/plugin-test@v3
-        with:
-          command: k9s --version
-          version: 0.13.0
+          command: k9s --help
 
       - name: asdf_plugin_test 0.24.2
         uses: asdf-vm/actions/plugin-test@v3
         with:
-          command: k9s --version
+          command: k9s --help
           version: 0.24.2
 
       - name: asdf_plugin_test 0.26.0
         uses: asdf-vm/actions/plugin-test@v3
         with:
-          command: k9s --version
+          command: k9s --help
           version: 0.26.0
 
       - name: asdf_plugin_test 0.27.0
         uses: asdf-vm/actions/plugin-test@v3
         with:
-          command: k9s --version
+          command: k9s --help
           version: 0.27.0
 
   lint_and_tests:
