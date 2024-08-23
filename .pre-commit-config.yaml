@@ -1,0 +1,61 @@
+---
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: trailing-whitespace # Trims trailing whitespace
+        exclude: ^shared/bats-libs/.*
+      - id: check-yaml # Validates YAML files
+        args:
+          - --allow-multiple-documents
+      - id: check-json # Validates JSON files
+        exclude: ^.vscode/.*
+      - id: check-toml # Validates TOML files
+      - id: check-xml # Validates XML files
+      - id: check-added-large-files # Checks for files that are added to the repository that are larger than a threshold
+      - id: check-case-conflict # Checks for files that would conflict in case-insensitive filesystems
+      - id: check-merge-conflict # Checks for files that contain merge conflict strings
+      - id: detect-private-key # Check for the existence of private keys
+      - id: check-executables-have-shebangs # Checks that executables have shebangs
+
+  - repo: https://gitlab.com/bmares/check-json5
+    rev: v1.0.0
+    hooks:
+      - id: check-json5
+
+  - repo: https://github.com/editorconfig-checker/editorconfig-checker.python
+    rev: 2.7.3
+    hooks:
+      - id: editorconfig-checker-system # Check editorconfig compliance
+        alias: ec
+  - repo: https://github.com/jumanjihouse/pre-commit-hooks
+    rev: 3.0.0
+    hooks:
+      - id: shellcheck # Shell scripts conform to shellcheck
+      - id: shfmt # Check shell style with shfmt
+
+  - repo: https://github.com/DavidAnson/markdownlint-cli2
+    rev: v0.13.0
+    hooks:
+      - id: markdownlint-cli2
+
+  - repo: https://github.com/adrienverge/yamllint.git
+    rev: v1.35.1
+    hooks:
+      - id: yamllint
+        args: [--config-data, relaxed, --no-warnings]
+
+  - repo: https://github.com/jumanjihouse/pre-commit-hook-yamlfmt
+    rev: 0.2.3
+    hooks:
+      - id: yamlfmt
+        args:
+          - --mapping
+          - '2'
+          - --sequence
+          - '4'
+          - --offset
+          - '2'
+          - --width
+          - '150'
+          - --explicit_start

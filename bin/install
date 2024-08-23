@@ -3,6 +3,8 @@
 set -e
 set -o pipefail
 
+readonly TOOL_NAME="k9s"
+
 # https://github.com/derailed/k9s/releases/download/v0.16.1/k9s_Linux_x86_64.tar.gz
 # https://github.com/derailed/k9s/releases/download/v0.16.1/k9s_Darwin_x86_64.tar.gz
 # https://github.com/derailed/k9s/releases/download/v0.16.1/k9s_Darwin_arm64.tar.gz
@@ -28,7 +30,13 @@ readonly g_download_url_template=https://github.com/__GITHUB_COORDINATES__/relea
 readonly g_binary_path_in_archive_template=__ARCHIVE_DIR__/__BINARY_NAME__
 readonly g_downloaded_file_is_not_an_archive=false
 
-readonly g_platform_pattern=custom # one of uname_c_x86_64|uname_l_dash_amd64|uname_l_underscore_amd64|uname_l_underscore_amd64|custom
+# one of uname_c_x86_64|uname_l_dash_amd64|uname_l_underscore_amd64|uname_l_underscore_amd64|custom
+readonly g_platform_pattern=custom
+
+fail() {
+  log ERROR "asdf-$TOOL_NAME: $*"
+  exit 1
+}
 
 # Borrowed to someone, but I don't remember who it was, sorry :(
 # Print message $2 with log-level $1 to STDERR, colorized if terminal
@@ -130,7 +138,9 @@ install_tool() {
     cp "$download_target_file" "$tmp_download_dir"
   fi
   log INFO "Copying binaries"
+  # editorconfig-checker-disable
   cp "$(get_binary_path_in_archive "${tmp_download_dir}" "${binary_name}" "${version}" "${platform}")" "${full_path_to_binary}"
+  # editorconfig-checker-enable
   chmod +x "${full_path_to_binary}"
   if [[ -n "$binary_alt_name" ]]; then
     cp "${full_path_to_binary}" "${full_path_to_alt_binary}"
@@ -151,8 +161,10 @@ get_binary_path_in_archive() {
   local version_short
   version_short=$(get_version_short "$version")
 
+  # editorconfig-checker-disable
   echo $g_binary_path_in_archive_template |
     sed "s|__ARCHIVE_DIR__|${archive_dir}|g;s|__BINARY_NAME__|${binary_name}|g;s|__VERSION__|${version}|g;s|__VERSION_SHORT__|${version_short}|g;s|__PLATFORM__|${platform}|g;"
+  # editorconfig-checker-enable
 }
 
 get_platform() {
@@ -201,8 +213,11 @@ get_filename() {
   version_short=$(get_version_short "$version")
   #  log DEBUG "version=${version}, version_short=${version_short}, binary_name=${binary_name}, platform=${platform}"
 
+  # editorconfig-checker-disable
   echo "$g_filename_template" |
     sed "s/__VERSION__/${version}/g;s/__VERSION_SHORT__/${version_short}/g;s/__BINARY_NAME__/${binary_name}/g;s/__PLATFORM__/${platform}/g"
+  # editorconfig-checker-enable
+
 }
 
 get_download_url() {
@@ -283,9 +298,27 @@ k9s_get_download_url() {
     : # do not alter behavior
   fi
 
+  vercomp "$version" "0.25.0"
+  case $? in
+  0) op='=' ;;
+  1) op='>' ;;
+  2) op='<' ;;
+  esac
+  if [[ "$op" == '<' ]] && [[ "$platform" == "Darwin_arm64" ]]; then
+    fail "Version $version is not supported on platform $platform"
+  else
+    : # do not alter behavior
+  fi
+
   echo "https://github.com/derailed/k9s/releases/download/${path_version}/${filename}"
 }
 #
 _tmp_download_dir="$(mktemp -d -t 'asdf_XXXXXXXX')"
 trap 'rm -rf "${_tmp_download_dir}"' EXIT
-install_tool "$ASDF_INSTALL_TYPE" "$ASDF_INSTALL_VERSION" "$ASDF_INSTALL_PATH" "$_tmp_download_dir" "$g_binary_name" "$g_binary_altname" "$g_downloaded_file_is_not_an_archive"
+install_tool "$ASDF_INSTALL_TYPE" \
+  "$ASDF_INSTALL_VERSION" \
+  "$ASDF_INSTALL_PATH" \
+  "$_tmp_download_dir" \
+  "$g_binary_name" \
+  "$g_binary_altname" \
+  "$g_downloaded_file_is_not_an_archive"

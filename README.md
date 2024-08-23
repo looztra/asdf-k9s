@@ -1,22 +1,53 @@
-# asdf-k9s
+# asdf-k9s <!-- omit in toc -->
 
-![AllInOne](https://github.com/looztra/asdf-k9s/workflows/AllInOne/badge.svg)
+[![Build](https://github.com/looztra/asdf-k9s/actions/workflows/code_checks.yml/badge.svg)](https://github.com/looztra/asdf-k9s/actions/workflows/code_checks.yml)
+[![Build](https://github.com/looztra/asdf-k9s/actions/workflows/workflows_checks.yml/badge.svg)](https://github.com/looztra/asdf-k9s/actions/workflows/workflows_checks.yml)
+
 [![GitHub license](https://img.shields.io/github/license/looztra/asdf-k9s?style=plastic)](https://github.com/looztra/asdf-k9s/blob/master/LICENSE)
 
-## Build History
+[k9s](https://github.com/derailed/k9s) plugin for the [asdf version manager](https://asdf-vm.com).
 
-[![Build history](https://buildstats.info/github/chart/looztra/asdf-k9s?branch=master)](https://github.com/looztra/asdf-k9s/actions)
+## Contents
 
-## k9s
+- [Contents](#contents)
+- [Dependencies](#dependencies)
+- [Install](#install)
+  - [add the plugin](#add-the-plugin)
+  - [install k9s](#install-k9s)
 
-<https://github.com/derailed/k9s>
+## Dependencies
+
+- `bash`, `curl`, and [POSIX utilities](https://pubs.opengroup.org/onlinepubs/9699919799/idx/utilities.html).
 
 ## Install
 
-```bash
-asdf plugin-add k9s https://github.com/looztra/asdf-k9s
+### add the plugin
+
+```shell
+asdf plugin add k9s
 ```
 
-## Use
+Or:
 
-Check out the [asdf](https://github.com/asdf-vm/asdf) readme for instructions on how to install and manage versions of k9s.
+```shell
+asdf plugin add k9s https://github.com/looztra/asdf-k9s.git
+```
+
+### install k9s
+
+```shell
+# Show all installable versions
+asdf list all k9s
+
+# Install latest version
+asdf install k9s latest
+
+# Set a version globally (on your ~/.tool-versions file)
+asdf global k9s latest
+
+# Now k9s commands are available
+k9s --help
+```
+
+Check [asdf](https://github.com/asdf-vm/asdf) readme for more instructions on how to
+install & manage versions.

@@ -1,0 +1,61 @@
+---
+name: Code checks
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.ref }}-${{ github.workflow }}-checks
+  cancel-in-progress: true
+
+jobs:
+  plugin_test:
+    strategy:
+      matrix:
+        os:
+          - macos-latest
+          - ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: asdf_plugin_test default
+        uses: asdf-vm/actions/plugin-test@v3
+        with:
+          command: k9s --help
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Tools with asdf
+        uses: asdf-vm/actions/install@v3
+
+      - name: Test plugin with bats
+        run: |
+          asdf plugin-add k9s "${GITHUB_WORKSPACE}"
+          bats test
+
+  lint_and_tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Tools with asdf
+        uses: asdf-vm/actions/install@v3
+
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/pre-commit
+          key: pre-commit-3|${{ hashFiles('.pre-commit-config.yaml') }}
+
+      - name: Run pre-commit checks
+        shell: bash
+        run: |
+          pre-commit run --all-files
