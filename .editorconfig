@@ -1,0 +1,54 @@
+# EditorConfig is awesome: https://EditorConfig.org
+
+# top-most EditorConfig file
+root = true
+
+# Unix-style newlines with a newline ending every file
+[*]
+charset = utf-8
+end_of_line = lf
+indent_size = 2
+indent_style = space
+insert_final_newline = true
+max_line_length = 120
+trim_trailing_whitespace = true
+
+# 4 space indentation
+# don't check for max_line_length, rely on pylint
+[*.py]
+indent_style = space
+indent_size = 4
+max_line_length = unset
+
+[Makefile]
+indent_style = tab
+max_line_length = unset
+
+[*.mk]
+indent_style = tab
+max_line_length = unset
+
+[*.{yml,yaml}]
+indent_size = 2
+indent_style = space
+max_line_length = unset
+
+# Fix for json files
+[*.json]
+max_line_length = unset
+
+[*.md]
+trim_trailing_whitespace = false
+max_line_length = unset
+indent_size = unset
+
+[LICENSE]
+max_line_length = unset
+indent_style = unset
+indent_size = unset
+
+[*.txt]
+max_line_length = unset
+
+[*.{sh,bats,bash}]
+max_line_length = unset
