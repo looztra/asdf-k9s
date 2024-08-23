@@ -34,7 +34,7 @@ readonly g_downloaded_file_is_not_an_archive=false
 readonly g_platform_pattern=custom
 
 fail() {
-  printf "asdf-%s: %s\n" $TOOL_NAME "$*"
+  log ERROR "asdf-$TOOL_NAME: $*"
   exit 1
 }
 
