@@ -30,11 +30,11 @@ jobs:
         with:
           command: k9s --help
 
-#      - name: asdf_plugin_test 0.24.2
-#        uses: asdf-vm/actions/plugin-test@v3
-#        with:
-#          command: k9s --help
-#          version: 0.24.2
+      - name: asdf_plugin_test 0.25.0 (first version to support Darwin_arm64)
+        uses: asdf-vm/actions/plugin-test@v3
+        with:
+          command: k9s --help
+          version: 0.25.0
 
       - name: asdf_plugin_test 0.26.0
         uses: asdf-vm/actions/plugin-test@v3
