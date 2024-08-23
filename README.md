@@ -14,6 +14,7 @@
 - [Install](#install)
   - [add the plugin](#add-the-plugin)
   - [install k9s](#install-k9s)
+- [Notes](#notes)
 
 ## Dependencies
 
@@ -51,3 +52,7 @@ k9s --help
 
 Check [asdf](https://github.com/asdf-vm/asdf) readme for more instructions on how to
 install & manage versions.
+
+## Notes
+
+- On 2024/08/23, the default branch changed from `master` to `main` so don't forget to run `asdf plugin update k9s`
