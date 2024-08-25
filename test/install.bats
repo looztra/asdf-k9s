@@ -1,7 +1,9 @@
 #!/usr/bin/env bats
 # shellcheck disable=SC2034
 BATS_TEST_FILENAME_BASENAME=$(basename "${BATS_TEST_FILENAME}")
-@test "list-all does not return v versions" {
+# bats file_tags=type:features
+
+@test "list-all does not return v versions [${BATS_TEST_FILENAME_BASENAME}]" {
   run asdf list all k9s
   [ "$status" -eq 0 ]
   result="$(echo "$output" | grep -c "v" || true)"

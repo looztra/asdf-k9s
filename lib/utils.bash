@@ -194,5 +194,5 @@ k9s_get_download_url() {
     : # do not alter behavior
   fi
 
-  echo "https://github.com/derailed/k9s/releases/download/${path_version}/${filename}"
+  printf "https://github.com/derailed/k9s/releases/download/%s/%s\n" "${path_version}" "${filename}"
 }
