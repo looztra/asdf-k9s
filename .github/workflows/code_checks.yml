@@ -37,7 +37,7 @@ jobs:
       - name: Test plugin with bats
         run: |
           asdf plugin-add k9s "${GITHUB_WORKSPACE}"
-          bats --filter-tags type:features test
+          bats --filter-tags type:features --filter-tags type:os_specific test
 
   lint_and_tests:
     runs-on: ubuntu-latest
