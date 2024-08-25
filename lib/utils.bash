@@ -85,13 +85,16 @@ function vercomp() {
       ver2[i]=0
     fi
     if ((10#${ver1[i]} > 10#${ver2[i]})); then
-      return 1
+      printf ">\n"
+      return 0 # >
     fi
     if ((10#${ver1[i]} < 10#${ver2[i]})); then
-      return 2
+      printf "<\n"
+      return 0 # <
     fi
   done
-  return 0
+  printf "=\n"
+  return 0 # =
 }
 
 get_platform() {
@@ -104,8 +107,8 @@ get_cpu() {
 
   case "$machine_hardware_name" in
   'x86_64')
-    vercomp "$version" "0.26.7"
-    if [[ $? == 1 ]]; then local cpu_type="amd64"; else local cpu_type="x86_64"; fi
+    op=$(vercomp "$version" "0.26.7")
+    if [[ "${op}" == ">" ]]; then local cpu_type="amd64"; else local cpu_type="x86_64"; fi
     ;;
   'powerpc64le' | 'ppc64le') local cpu_type="ppc64le" ;;
   'aarch64') local cpu_type="arm64" ;;
@@ -145,36 +148,21 @@ k9s_get_download_url() {
 
   # https://github.com/derailed/k9s/releases/download/v0.16.1/k9s_Linux_x86_64.tar.gz
   # https://github.com/derailed/k9s/releases/download/0.11.1/k9s_0.11.1_Linux_x86_64.tar.gz
-  vercomp "$version" "0.14.0"
-  case $? in
-  0) op='=' ;;
-  1) op='>' ;;
-  2) op='<' ;;
-  esac
+  op=$(vercomp "$version" "0.14.0")
   if [[ "$op" == '<' ]]; then
     filename="$(get_filename_pre_0_14_0 "$version" "$platform")"
   else
     filename="$(get_filename_post_0_14_0 "$version" "$platform")"
   fi
 
-  vercomp "$version" "0.13.0"
-  case $? in
-  0) op='=' ;;
-  1) op='>' ;;
-  2) op='<' ;;
-  esac
+  op=$(vercomp "$version" "0.13.0")
   if [[ "$op" == '<' ]]; then
     path_version="$version"
   else
     path_version="v$version"
   fi
 
-  vercomp "$version" "0.24.10"
-  case $? in
-  0) op='=' ;;
-  1) op='>' ;;
-  2) op='<' ;;
-  esac
+  op=$(vercomp "$version" "0.24.10")
   if [[ "$op" == '=' ]]; then
     filename="$(get_filename_0_24_10 "$version" "$platform")"
     path_version="v$version"
@@ -182,12 +170,7 @@ k9s_get_download_url() {
     : # do not alter behavior
   fi
 
-  vercomp "$version" "0.25.0"
-  case $? in
-  0) op='=' ;;
-  1) op='>' ;;
-  2) op='<' ;;
-  esac
+  op=$(vercomp "$version" "0.25.0")
   if [[ "$op" == '<' ]] && [[ "$platform" == "Darwin_arm64" ]]; then
     fail "Version $version is not supported on platform $platform"
   else
