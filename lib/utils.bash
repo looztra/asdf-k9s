@@ -55,9 +55,7 @@ install_version() {
     mkdir -p "$install_path"
     cp -r "$ASDF_DOWNLOAD_PATH"/* "$install_path"
 
-    local tool_cmd
-    tool_cmd="$(get_tool_cmd)"
-    [ -x "${install_path}/$TOOL_NAME" ] || fail "Expected $install_path/$tool_cmd to be executable."
+    [ -x "${install_path}/$TOOL_NAME" ] || fail "Expected $install_path/${TOOL_NAME} to be executable."
 
     printf "* %s %s installation was successful!\n" "${TOOL_NAME}" "${version}"
     printf "* Make it local or global with:\n"
