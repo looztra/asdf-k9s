@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.0.0](https://github.com/looztra/asdf-k9s/compare/v1.0.0...v2.0.0) (2024-08-25)
+
+
+### ⚠ BREAKING CHANGES
+
+* **code:** change code to get closer to the template ([#37](https://github.com/looztra/asdf-k9s/issues/37))
+
+### Code Refactoring
+
+* **code:** change code to get closer to the template ([#37](https://github.com/looztra/asdf-k9s/issues/37)) ([b810a66](https://github.com/looztra/asdf-k9s/commit/b810a6666cb96d9139639f5590c35b18d1bab505))
+
 ## 1.0.0 (2024-08-23)
 
 
