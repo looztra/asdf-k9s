@@ -35,7 +35,7 @@ download_release() {
   version="$1"
   filename="$2"
 
-  platform=$(get_platform)
+  platform=$(get_platform "${version}")
   url=$(k9s_get_download_url "$version" "$platform")
 
   printf "* Downloading %s release %s...\n" "${TOOL_NAME}" "${version}"
@@ -70,6 +70,7 @@ install_version() {
 # from https://stackoverflow.com/questions/4023830/how-to-compare-two-strings-in-dot-separated-version-format-in-bash
 function vercomp() {
   if [[ "$1" == "$2" ]]; then
+    printf "=\n"
     return 0
   fi
   local IFS=.
@@ -98,16 +99,18 @@ function vercomp() {
 }
 
 get_platform() {
-  printf "%s_%s\n" "$(uname)" "$(get_cpu)"
+  local _version="$1?"
+  printf "%s_%s\n" "$(uname)" "$(get_cpu "$_version")"
 }
 
 get_cpu() {
+  local _version="$1?"
   local machine_hardware_name
   machine_hardware_name="$(uname -m)"
 
   case "$machine_hardware_name" in
   'x86_64')
-    op=$(vercomp "$version" "0.26.7")
+    op=$(vercomp "$_version" "0.26.7")
     if [[ "${op}" == ">" ]]; then local cpu_type="amd64"; else local cpu_type="x86_64"; fi
     ;;
   'powerpc64le' | 'ppc64le') local cpu_type="ppc64le" ;;
