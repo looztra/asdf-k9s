@@ -30,30 +30,6 @@ list_all_versions() {
   list_github_tags
 }
 
-# Borrowed to someone, but I don't remember who it was, sorry :(
-# Print message $2 with log-level $1 to STDERR, colorized if terminal
-# log DEBUG "DOCKER_HOST ${DOCKER_HOST}"
-function log() {
-  local level=${1?}
-  shift
-  local code
-  local line
-  code=''
-  line="[$(date '+%F %T')] $level: $*"
-  if [ -t 2 ]; then
-    case "$level" in
-    INFO) code=36 ;;
-    DEBUG) code=35 ;;
-    WARN) code=33 ;;
-    ERROR) code=31 ;;
-    *) code=37 ;;
-    esac
-    echo -e "\e[${code}m${line} \e[94m(${FUNCNAME[1]})\e[0m"
-  else
-    echo "$line"
-  fi >&2
-}
-
 download_release() {
   local version filename url platform
   version="$1"
@@ -62,8 +38,8 @@ download_release() {
   platform=$(get_platform)
   url=$(k9s_get_download_url "$version" "$platform")
 
-  echo "* Downloading $TOOL_NAME release $version..."
-  curl "${curl_opts[@]}" -o "$filename" -C - "$url" || fail "Could not download $url"
+  printf "* Downloading %s release %s...\n" "${TOOL_NAME}" "${version}"
+  curl "${curl_opts[@]}" --output "${filename}" -C - "${url}" || fail "Could not download ${url}"
 }
 
 install_version() {
@@ -81,12 +57,12 @@ install_version() {
 
     local tool_cmd
     tool_cmd="$(get_tool_cmd)"
-    test -x "$install_path/$tool_cmd" || fail "Expected $install_path/$tool_cmd to be executable."
+    [ -x "${install_path}/$TOOL_NAME" ] || fail "Expected $install_path/$tool_cmd to be executable."
 
-    echo "$TOOL_NAME $version installation was successful!"
-    echo "* Install locally or globally with:"
-    echo "asdf local $TOOL_NAME $version"
-    echo "asdf global $TOOL_NAME $version"
+    printf "* %s %s installation was successful!\n" "${TOOL_NAME}" "${version}"
+    printf "* Make it local or global with:\n"
+    printf "asdf local %s %s\n" "${TOOL_NAME}" "${version}"
+    printf "asdf global %s %s\n" "${TOOL_NAME}" "${version}"
   ) || (
     rm -rf "$install_path"
     fail "An error occurred while installing $TOOL_NAME $version."
@@ -120,13 +96,8 @@ function vercomp() {
   return 0
 }
 
-get_version_short() {
-  local version=$1
-  echo "$version" | tr -d "v"
-}
-
 get_platform() {
-  echo "$(uname)_$(get_cpu)"
+  printf "%s_%s\n" "$(uname)" "$(get_cpu)"
 }
 
 get_cpu() {
@@ -144,28 +115,28 @@ get_cpu() {
   *) local cpu_type="$machine_hardware_name" ;;
   esac
 
-  echo "$cpu_type"
+  printf "%s\n" "${cpu_type}"
 }
 
 get_filename_post_0_14_0() {
   local version="$1"
   local platform="$2"
 
-  echo "${TOOL_NAME}_${platform}.tar.gz"
+  printf "%s_%s.tar.gz\n" "${TOOL_NAME}" "${platform}"
 }
 
 get_filename_pre_0_14_0() {
   local version="$1"
   local platform="$2"
 
-  echo "${TOOL_NAME}_${version}_${platform}.tar.gz"
+  printf "%s_%s_%s.tar.gz\n" "${TOOL_NAME}" "${version}" "${platform}"
 }
 
 get_filename_0_24_10() {
   local version="$1"
   local platform="$2"
 
-  echo "${TOOL_NAME}_v${version}_${platform}.tar.gz"
+  printf "%s_v%s_%s.tar.gz\n" "${TOOL_NAME}" "${version}" "${platform}"
 }
 
 k9s_get_download_url() {
