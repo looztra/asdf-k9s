@@ -54,6 +54,45 @@ function log() {
   fi >&2
 }
 
+download_release() {
+  local version filename url platform
+  version="$1"
+  filename="$2"
+
+  platform=$(get_platform)
+  url=$(k9s_get_download_url "$version" "$platform")
+
+  echo "* Downloading $TOOL_NAME release $version..."
+  curl "${curl_opts[@]}" -o "$filename" -C - "$url" || fail "Could not download $url"
+}
+
+install_version() {
+  local install_type="$1"
+  local version="$2"
+  local install_path="${3%/bin}/bin"
+
+  if [ "$install_type" != "version" ]; then
+    fail "asdf-$TOOL_NAME supports release installs only"
+  fi
+
+  (
+    mkdir -p "$install_path"
+    cp -r "$ASDF_DOWNLOAD_PATH"/* "$install_path"
+
+    local tool_cmd
+    tool_cmd="$(get_tool_cmd)"
+    test -x "$install_path/$tool_cmd" || fail "Expected $install_path/$tool_cmd to be executable."
+
+    echo "$TOOL_NAME $version installation was successful!"
+    echo "* Install locally or globally with:"
+    echo "asdf local $TOOL_NAME $version"
+    echo "asdf global $TOOL_NAME $version"
+  ) || (
+    rm -rf "$install_path"
+    fail "An error occurred while installing $TOOL_NAME $version."
+  )
+}
+
 # from https://stackoverflow.com/questions/4023830/how-to-compare-two-strings-in-dot-separated-version-format-in-bash
 function vercomp() {
   if [[ "$1" == "$2" ]]; then
