@@ -1,5 +1,5 @@
 shellcheck 0.10.0
 shfmt 3.10.0
-editorconfig-checker 2.8.0
+editorconfig-checker 3.0.3
 pre-commit 4.0.1
 bats 1.11.0
