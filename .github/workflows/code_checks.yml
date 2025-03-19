@@ -23,21 +23,35 @@ jobs:
           - ubuntu-latest
     runs-on: ${{ matrix.os }}
     steps:
-      - name: asdf_plugin_test default
-        uses: asdf-vm/actions/plugin-test@v3
-        with:
-          command: k9s --help
-
       - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Install Tools with asdf
-        uses: asdf-vm/actions/install@v3
+        env:
+          ASDF_VERSION: v0.16.5
+          GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          curl -Ls --proto "=https" https://github.com/asdf-vm/asdf/releases/download/${ASDF_VERSION}/asdf-${ASDF_VERSION}-linux-amd64.tar.gz --output asdf.tar.gz
+          tar xf asdf.tar.gz
+          mkdir -p "${GITHUB_WORKSPACE}/.local/bin"
+          mv asdf "${GITHUB_WORKSPACE}/.local/bin"
+          chmod +x "${GITHUB_WORKSPACE}/.local/bin/asdf"
+          rm asdf.tar.gz
+          echo "${GITHUB_WORKSPACE}/.local/bin" >> "$GITHUB_PATH"
+
+      - name: Install bats
+        run: |
+          asdf plugin add bats
+          asdf install bats
 
       - name: Test plugin with bats
         run: |
-          asdf plugin-add k9s "${GITHUB_WORKSPACE}"
+          echo "::group::Install local plugin"
+          asdf plugin add k9s "${GITHUB_WORKSPACE}"
+          echo "::endgroup::"
+          echo "::group::Test plugin with bats"
           bats --filter-tags type:features --filter-tags type:os_specific test
+          echo "::endgroup::"
 
   lint_and_tests:
     runs-on: ubuntu-latest
