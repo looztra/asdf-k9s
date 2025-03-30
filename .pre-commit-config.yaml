@@ -24,7 +24,7 @@ repos:
       - id: check-json5
 
   - repo: https://github.com/editorconfig-checker/editorconfig-checker.python
-    rev: 3.2.0
+    rev: 3.2.1
     hooks:
       - id: editorconfig-checker-system # Check editorconfig compliance
         alias: ec
