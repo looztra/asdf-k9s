@@ -30,7 +30,7 @@ jobs:
           command: k9s --help
 
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Install Tools with asdf
         uses: asdf-vm/actions/install@v3
@@ -46,7 +46,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Install Tools with asdf
         uses: asdf-vm/actions/install@v3
