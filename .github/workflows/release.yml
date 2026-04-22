@@ -14,7 +14,7 @@ jobs:
   release-please:
     runs-on: ubuntu-latest
     steps:
-      - uses: GoogleCloudPlatform/release-please-action@v4
+      - uses: GoogleCloudPlatform/release-please-action@v5
         with:
           release-type: simple
           token: ${{ secrets.RELEASE_PLEASE_TOKEN }}
